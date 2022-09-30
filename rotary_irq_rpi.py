@@ -3,14 +3,14 @@
 # Copyright (c) 2021 Eric Moyer
 # https://opensource.org/licenses/MIT
 
-# Platform-specific MicroPython code for the rotary encoder module
-# Raspberry Pi Pico implementation
+# Platform-specific Python code for the rotary encoder module
+# Raspberry Pi implementation
 
 # Documentation:
 #   https://github.com/MikeTeachman/micropython-rotary
 
 from RPi import GPIO
-from rotary import Rotary
+from .rotary import Rotary
 
 
 class RotaryIRQ(Rotary):

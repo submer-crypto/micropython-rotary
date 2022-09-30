@@ -11,7 +11,7 @@
 import os
 from pyb import Pin
 from pyb import ExtInt
-from rotary import Rotary
+from .rotary import Rotary
 
 
 class RotaryIRQ(Rotary):
