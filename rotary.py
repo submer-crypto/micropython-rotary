@@ -7,7 +7,15 @@
 # Documentation:
 #   https://github.com/MikeTeachman/micropython-rotary
 
-import micropython
+try:
+    import micropython
+    _schedule = micropython.schedule
+except ImportError:
+    def _schedule(fn, arg):
+        fn(arg)
+
+    def const(expr):
+        return expr
 
 _DIR_CW = const(0x10)  # Clockwise step
 _DIR_CCW = const(0x20)  # Counter-clockwise step
@@ -165,6 +173,6 @@ class Rotary(object):
 
         try:
             if old_value != self._value and len(self._listener) != 0:
-                micropython.schedule(_trigger, self)
+                _schedule(_trigger, self)
         except:
             pass

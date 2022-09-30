@@ -9,10 +9,8 @@
 # Documentation:
 #   https://github.com/MikeTeachman/micropython-rotary
 
-from machine import Pin
+from RPi import GPIO
 from rotary import Rotary
-
-IRQ_RISING_FALLING = Pin.IRQ_RISING | Pin.IRQ_FALLING
 
 
 class RotaryIRQ(Rotary):
@@ -31,31 +29,34 @@ class RotaryIRQ(Rotary):
         super().__init__(min_val, max_val, reverse, range_mode, half_step, invert)
 
         if pull_up:
-            self._pin_clk = Pin(pin_num_clk, Pin.IN, Pin.PULL_UP)
-            self._pin_dt = Pin(pin_num_dt, Pin.IN, Pin.PULL_UP)
+            GPIO.setup(pin_num_clk, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            GPIO.setup(pin_num_dt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         else:
-            self._pin_clk = Pin(pin_num_clk, Pin.IN)
-            self._pin_dt = Pin(pin_num_dt, Pin.IN)
+            GPIO.setup(pin_num_clk, GPIO.IN)
+            GPIO.setup(pin_num_dt, GPIO.IN)
+
+        self._pin_num_clk = pin_num_clk
+        self._pin_num_dt = pin_num_dt
 
         self._hal_enable_irq()
 
     def _enable_clk_irq(self):
-        self._pin_clk.irq(self._process_rotary_pins, IRQ_RISING_FALLING)
+        GPIO.add_event_detect(self._pin_num_clk, GPIO.BOTH, callback=self._process_rotary_pins)
 
     def _enable_dt_irq(self):
-        self._pin_dt.irq(self._process_rotary_pins, IRQ_RISING_FALLING)
+        GPIO.add_event_detect(self._pin_num_dt, GPIO.BOTH, callback=self._process_rotary_pins)
 
     def _disable_clk_irq(self):
-        self._pin_clk.irq(None, 0)
+        GPIO.remove_event_detect(self._pin_num_clk)
 
     def _disable_dt_irq(self):
-        self._pin_dt.irq(None, 0)
+        GPIO.remove_event_detect(self._pin_num_dt)
 
     def _hal_get_clk_value(self):
-        return self._pin_clk.value()
+        return GPIO.input(self._pin_num_clk)
 
     def _hal_get_dt_value(self):
-        return self._pin_dt.value()
+        return GPIO.input(self._pin_num_dt)
 
     def _hal_enable_irq(self):
         self._enable_clk_irq()
