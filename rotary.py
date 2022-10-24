@@ -82,6 +82,7 @@ class Rotary(object):
     RANGE_UNBOUNDED = const(1)
     RANGE_WRAP = const(2)
     RANGE_BOUNDED = const(3)
+    RANGE_INCREMENT = const(4)
 
     def __init__(self, min_val, max_val, reverse, range_mode, half_step, invert):
         self._min_val = min_val
@@ -168,6 +169,8 @@ class Rotary(object):
                 incr,
                 self._min_val,
                 self._max_val)
+        elif self._range_mode == self.RANGE_INCREMENT:
+            self._value = incr
         else:
             self._value = self._value + incr
 
